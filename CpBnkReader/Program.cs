@@ -1,16 +1,20 @@
-﻿namespace CpBnkReader
+﻿using Newtonsoft.Json;
+
+namespace CpBnkReader
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            using var fs = File.Open(@"C:\Dev\sfx_container.bnk", FileMode.Open);
+            using var fs = File.Open(args[0], FileMode.Open);
             using var br = new BinaryReader(fs);
 
             var file = new BnkFile();
             file.Read(br);
 
-            var tmp = FindSfxSourceIds(file, 4091981167);
+            string jsonString = JsonConvert.SerializeObject(file);
+
+            Console.WriteLine(jsonString);
         }
 
         static List<uint> FindSfxSourceIds(BnkFile file, uint wwiseId)
