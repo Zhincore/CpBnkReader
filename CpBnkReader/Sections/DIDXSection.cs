@@ -2,6 +2,7 @@
 
 public class DIDXSection : ISection
 {
+    public readonly string Type = "DIDX";
     private readonly BnkFile _parent;
 
     public DIDXSection(BnkFile parent)

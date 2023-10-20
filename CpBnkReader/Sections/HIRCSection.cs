@@ -4,6 +4,7 @@ namespace CpBnkReader;
 
 public class HIRCSection : ISection
 {
+    public readonly string Type = "HIRC";
     private readonly BnkFile _parent;
 
     public HIRCSection(BnkFile parent)
@@ -90,19 +91,21 @@ public class HIRCSection : ISection
 
 public abstract class BaseHIRCObject
 {
-    protected BaseHIRCObject(uint id)
+    protected BaseHIRCObject(uint id, string entryType)
     {
         Id = id;
+        EntryType = entryType;
     }
 
     public uint Id { get; }
+    public string EntryType { get; }
 
     public abstract void Read(BinaryReader br);
 }
 
 public class SoundObject : BaseHIRCObject
 {
-    public SoundObject(uint id) : base(id) {}
+    public SoundObject(uint id) : base(id, "Sound") {}
 
     public uint SourceId { get; set; }
     public override void Read(BinaryReader br)
@@ -115,7 +118,7 @@ public class SoundObject : BaseHIRCObject
 
 public class ActionObject : BaseHIRCObject
 {
-    public ActionObject(uint id) : base(id) { }
+    public ActionObject(uint id) : base(id, "Action") { }
 
     public byte Type { get; set; }
     public uint GameObjectReferenceId { get; set; }
@@ -130,7 +133,7 @@ public class ActionObject : BaseHIRCObject
 
 public class EventObject : BaseHIRCObject
 {
-    public EventObject(uint id) : base(id) { }
+    public EventObject(uint id) : base(id, "Event") { }
     public List<uint> Events { get; } = new();
 
     public override void Read(BinaryReader br)
@@ -145,7 +148,7 @@ public class EventObject : BaseHIRCObject
 
 public class RanSeqCntrObject : BaseHIRCObject
 {
-    public RanSeqCntrObject(uint id) : base(id) { }
+    public RanSeqCntrObject(uint id) : base(id, "RanSeqCntr") { }
     public List<uint> Children { get; } = new();
     public override void Read(BinaryReader br)
     {
@@ -163,7 +166,7 @@ public class RanSeqCntrObject : BaseHIRCObject
 
 public class MusicSegmentObject : BaseHIRCObject
 {
-    public MusicSegmentObject(uint id) : base(id) { }
+    public MusicSegmentObject(uint id) : base(id, "MusicSegment") { }
     public List<uint> Children { get; } = new();
     public override void Read(BinaryReader br)
     {
@@ -181,7 +184,7 @@ public class MusicSegmentObject : BaseHIRCObject
 
 public class MusicTrackObject : BaseHIRCObject
 {
-    public MusicTrackObject(uint id) : base(id) { }
+    public MusicTrackObject(uint id) : base(id, "MusicTrack") { }
     public List<uint> Sources { get; } = new();
     public override void Read(BinaryReader br)
     {
@@ -198,7 +201,7 @@ public class MusicTrackObject : BaseHIRCObject
 
 public class MusicSwitchCntrObject : BaseHIRCObject
 {
-    public MusicSwitchCntrObject(uint id) : base(id) { }
+    public MusicSwitchCntrObject(uint id) : base(id, "MusicSwitchCntr") { }
     public List<uint> Children { get; } = new();
     public override void Read(BinaryReader br)
     {
@@ -216,7 +219,7 @@ public class MusicSwitchCntrObject : BaseHIRCObject
 
 public class MusicRanSeqCntrObject : BaseHIRCObject
 {
-    public MusicRanSeqCntrObject(uint id) : base(id) { }
+    public MusicRanSeqCntrObject(uint id) : base(id, "MusicRanSeqCntr") { }
     public List<uint> Children { get; } = new();
     public override void Read(BinaryReader br)
     {

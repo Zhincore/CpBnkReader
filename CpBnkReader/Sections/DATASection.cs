@@ -2,6 +2,7 @@
 
 public class DATASection : ISection
 {
+    public readonly string Type = "DATA";
     private readonly BnkFile _parent;
 
     public DATASection(BnkFile parent)
