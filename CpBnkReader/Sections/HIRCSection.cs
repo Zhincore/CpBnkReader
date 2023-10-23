@@ -149,10 +149,10 @@ public class StateObject : BaseHIRCObject
 
     public override void Read(BinaryReader br)
     {
-        var numProps = br.ReadUInt16();
+        var numProps = br.ReadByte();
         for (int i = 0; i < numProps; i++) {
             var prop = new StateProp();
-            prop.Id = br.ReadUInt16();
+            prop.Id = br.ReadByte();
             Props.Add(prop);
         }
         for (int i = 0; i < numProps; i++) {
@@ -219,17 +219,25 @@ public class RanSeqCntrObject : BaseHIRCObject
     public RanSeqCntrObject(uint id) : base(id, "RanSeqCntr") { }
 
     public List<uint> Children { get; } = new();
+    // public List<uint> Playlist { get; } = new();
+    
     public override void Read(BinaryReader br)
     {
         HIRCHelper.ReadNodeBaseParams(br);
 
         br.BaseStream.Position += 24;
 
-        var propsCount = br.ReadUInt32();
-        for (int i = 0; i < propsCount; i++)
+        var childCount = br.ReadUInt32();
+        for (int i = 0; i < childCount; i++)
         {
             Children.Add(br.ReadUInt32());
         }
+
+        // var playlistCount = br.ReadUInt16();
+        // for (int i = 0; i < playlistCount; i++) {
+        //     Playlist.Add(br.ReadUInt32());
+        //     br.BaseStream.Position += 4;
+        // }
     }
 }
 
@@ -238,28 +246,54 @@ public class SwitchCntrObject : BaseHIRCObject
     public SwitchCntrObject(uint id) : base(id, "SwitchCntr") { }
 
     public byte GroupType { get; set; }
-    public uint GroupID { get; set; }
+    public uint GroupId { get; set; }
     public uint DefaultSwitch { get; set; }
     public bool IsContinuousValidation { get; set; }
-    public List<uint> Groups { get; } = new();
+    public List<uint> Children { get; } = new();
+    public List<SwitchGroup> Groups { get; } = new();
+    public List<uint> Params { get; } = new();
     public override void Read(BinaryReader br)
     {
         HIRCHelper.ReadNodeBaseParams(br);
 
         GroupType = br.ReadByte();
-        GroupID = br.ReadUInt32();
+        GroupId = br.ReadUInt32();
         DefaultSwitch = br.ReadUInt32();
         IsContinuousValidation = br.ReadBoolean();
 
-        var groupCount = br.ReadUInt32();
+        var childCount = br.ReadUInt32();
+        for (int i = 0; i < childCount; i++)
+        {
+            Children.Add(br.ReadUInt32());
+        }
 
+        var groupCount = br.ReadUInt32();
         for (int i = 0; i < groupCount; i++)
         {
-            Groups.Add(br.ReadUInt32());
+            var group = new SwitchGroup();
+            group.SwitchId = br.ReadUInt32();
+            
+            var itemCount = br.ReadUInt32();
+            for (int j = 0; j < itemCount; j++) {
+                group.Items.Add(br.ReadUInt32());
+            }
+
+            Groups.Add(group);
+        }
+
+        var paramCount = br.ReadUInt32();
+        for (int i = 0; i < paramCount; i++) {
+            Params.Add(br.ReadUInt32());
+            br.BaseStream.Position += 10;
         }
     }
 }
 
+
+public class SwitchGroup {
+    public uint SwitchId { get; set; }
+    public List<uint> Items { get; } = new();
+}
 
 public class MusicSegmentObject : BaseHIRCObject
 {
