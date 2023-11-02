@@ -74,7 +74,8 @@ public class HIRCSection : ISection
                 case 8: // AudioBus 
                     break;
 
-                case 9: // BlendContainer  
+                case 9: // LayerCntr
+                    obj = new LayerCntrObject(id);
                     break;
 
                 case 10: // MusicSegment
@@ -293,6 +294,23 @@ public class SwitchCntrObject : BaseHIRCObject
 public class SwitchGroup {
     public uint SwitchId { get; set; }
     public List<uint> Items { get; } = new();
+}
+
+public class LayerCntrObject : BaseHIRCObject
+{
+    public LayerCntrObject(uint id) : base(id, "LayerCntr") { }
+
+    public List<uint> Children { get; } = new();
+
+    public override void Read(BinaryReader br)
+    {
+        HIRCHelper.ReadNodeBaseParams(br);
+
+        var numChildren = br.ReadUInt32();
+        for (int i = 0; i < numChildren; i++) {
+            Children.Add(br.ReadUInt32());
+        }
+    }
 }
 
 public class MusicSegmentObject : BaseHIRCObject
